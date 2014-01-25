@@ -35,6 +35,14 @@ end
 function love.update(dt)
     world:update(dt)
     player:update(dt)
+
+    if player.flags.happy then
+        level:setCanvas("happy")
+    elseif player.flags.sad then
+        level:setCanvas("sad")
+    else
+        level:setCanvas("neutral")
+    end
 end
 
 function love.draw()

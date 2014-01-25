@@ -31,6 +31,8 @@ function Player:init(world, x, y, width, height)
         jumping = false,
         ["1"] = false,
         ["2"] = false,
+        happy = false,
+        sad = false,
     }
 end
 
@@ -47,14 +49,18 @@ function Player:update(dt)
     end
 
     if self.flags["1"] then
+        self.flags.happy = true
         self.meters.happy:degenerate(dt)
     else
+        self.flags.happy = false
         self.meters.happy:regenerate(dt)
     end
 
     if self.flags["2"] then
+        self.flags.sad = true
         self.meters.sad:degenerate(dt)
     else
+        self.flags.sad = false
         self.meters.sad:regenerate(dt)
     end
 end

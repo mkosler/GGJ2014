@@ -11,6 +11,7 @@ function Level:init(world, filepath, tilewidth, tileheight)
     self.tileheight = tileheight
 
     self.tiles = {}
+    self.canvases = {}
 end
 
 function Level:load()
@@ -56,37 +57,42 @@ function Level:load()
 end
 
 function Level:renderToCanvas()
-    self.canvas = love.graphics.newCanvas(self.rows * self.tilewidth, self.columns * self.tileheight)
+    self.canvases.neutral = love.graphics.newCanvas(self.rows * self.tilewidth, self.columns * self.tileheight)
+    self.canvases.happy = love.graphics.newCanvas(self.rows * self.tilewidth, self.columns * self.tileheight)
+    self.canvases.sad = love.graphics.newCanvas(self.rows * self.tilewidth, self.columns * self.tileheight)
 
-    love.graphics.setCanvas(self.canvas)
     for _,tile in ipairs(self.tiles) do
         if tile.body then
             local x, y = tile.fixture:getBoundingBox()
 
+            local function drawTile()
+                love.graphics.setColor(255, 255, 255)
+                love.graphics.polygon("fill", tile.body:getWorldPoints(tile.shape:getPoints()))
+            end
+
             if tile.isNeutralSolid then
-                love.graphics.setColor(0, 255, 0)
-                love.graphics.rectangle("fill", x, y, self.tilewidth / 3, self.tileheight)
+                self.canvases.neutral:renderTo(drawTile)
             end
 
             if tile.isHappySolid then
-                love.graphics.setColor(0, 0, 255)
-                love.graphics.rectangle("fill", x + self.tilewidth / 3, y, self.tilewidth / 3, self.tileheight)
+                self.canvases.happy:renderTo(drawTile)
             end
 
             if tile.isSadSolid then
-                love.graphics.setColor(255, 0, 0)
-                love.graphics.rectangle("fill", x + 2 * self.tilewidth / 3, y, self.tilewidth / 3, self.tileheight)
+                self.canvases.sad:renderTo(drawTile)
             end
-
-            love.graphics.setColor(255, 255, 255)
-            love.graphics.polygon("line", tile.body:getWorldPoints(tile.shape:getPoints()))
         end
     end
-    love.graphics.setCanvas()
+
+    self.canvases.current = self.canvases.neutral
+end
+
+function Level:setCanvas(canvas)
+    self.canvases.current = self.canvases[canvas]
 end
 
 function Level:draw()
-    love.graphics.draw(self.canvas, 0, 0)
+    love.graphics.draw(self.canvases.current)
 end
 
 return Level

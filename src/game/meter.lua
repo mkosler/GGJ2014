@@ -5,7 +5,7 @@ function Meter:init(emotion)
     self.emotion = emotion
     self.max = 100
     self.value = self.max
-    self.regenerationRate = 20
+    self.regenerationRate = 50
 end
 
 function Meter:regenerate(dt)
@@ -19,7 +19,7 @@ end
 function Meter:degenerate(dt)
     self.value = self.value - self.regenerationRate * dt
 
-    if self.value == 0 then
+    if self.value <= 0 then
         self.value = 0
     end
 end
