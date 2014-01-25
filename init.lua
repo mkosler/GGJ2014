@@ -24,6 +24,8 @@ return {
     },
     TERMINALS = {
         IMAGE = love.graphics.newImage("assets/images/textbox.png"),
+        TEXT_SPEED = 0.05,
+        BUFFER_LENGTH = 20,
         NEUTRAL = {
             "YOUR FUNCTIONS PERFORMING AT SATISFACTORY LEVELS",
             "FE 8F CC 24 A4 B9 C1 C7 70 00",

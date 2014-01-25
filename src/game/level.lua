@@ -1,4 +1,8 @@
 local Class = require("lib.hump.class")
+local Interactive = require("src.game.interactives.interactive")
+local Barrier = require("src.game.interactives.barrier")
+local Terminal = require("src.game.interactives.terminal")
+local Exit = require("src.game.interactives.exit")
 
 local Level = Class{}
 function Level:init(world, filepath)
@@ -91,24 +95,17 @@ function Level:loadInteractives(group)
     if not group.visible or group.opacity == 0 then return end
 
     for _,object in ipairs(group.objects) do
-        local o = {}
+        local interactive = nil
 
-        o.name = object.name
-        o.type = object.type
-        o.gid = object.gid
-        o.visible = object.visible
-
-        o.body = love.physics.newBody(self.world, object.x + self.data.tilewidth / 2, object.y + self.data.tileheight / 2, "static")
-        o.shape = love.physics.newRectangleShape(self.data.tilewidth, self.data.tileheight)
-        o.fixture = love.physics.newFixture(o.body, o.shape)
-
-        if o.name ~= "Barrier" then
-            o.fixture:setSensor(true)
+        if object.name == "Barrier" then
+            interactive = Barrier(self.world, self.tilesets[1].image, self.tilesets[1].quads[object.gid], object)
+        elseif object.name == "Terminal" then
+            interactive = Terminal(self.world, self.tilesets[1].image, self.tilesets[1].quads[object.gid], object)
+        elseif object.name == "Exit" then
+            interactive = Exit(self.world, self.tilesets[1].image, self.tilesets[1].quads[object.gid], object)
         end
 
-        o.fixture:setUserData(o.name)
-
-        table.insert(self.interactives, o)
+        table.insert(self.interactives, interactive)
     end
 end
 
@@ -134,7 +131,7 @@ function Level:loadCollisions(group)
         o.shape = love.physics.newRectangleShape(object.width, object.height)
         o.fixture = love.physics.newFixture(o.body, o.shape)
 
-        table.insert(self.interactives, o)
+        table.insert(self.collisions, o)
     end
 end
 
@@ -152,12 +149,15 @@ end
 
 function Level:drawInteractives()
     for _,interactive in ipairs(self.interactives) do
+        interactive:draw()
+        --[[
         if interactive.visible then
             local ts = self.tilesets[1]
             local x, y = interactive.fixture:getBoundingBox()
 
             love.graphics.draw(ts.image, ts.quads[interactive.gid], math.floor(x), math.floor(y - self.data.tileheight))
         end
+        ]]
     end
 end
 

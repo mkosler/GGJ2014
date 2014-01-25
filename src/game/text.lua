@@ -37,12 +37,12 @@ function Text:start()
 
     local j = 0
 
-    Timer.addPeriodic(0.15, function ()
+    Timer.addPeriodic(TERMINALS.TEXT_SPEED, function ()
         self.visibleText = self.text:sub(1, j)
         j = j + 1
     end, self.text:len() + 1)
 
-    Timer.add(0.15 * (self.text:len() + 5), function () self:reset() end)
+    Timer.add(TERMINALS.TEXT_SPEED * (self.text:len() + 1 + TERMINALS.BUFFER_LENGTH), function () self:reset() end)
 end
 
 function Text:draw()
