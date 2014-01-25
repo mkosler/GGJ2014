@@ -8,6 +8,7 @@ function Interactive:init(world, image, quad, object)
     self.type = object.type
 
     local _,_,w,h = quad:getViewport()
+
     self.width = w
     self.height = h
 
@@ -15,7 +16,7 @@ function Interactive:init(world, image, quad, object)
     self.shape = love.physics.newRectangleShape(self.width, self.height)
     self.fixture = love.physics.newFixture(self.body, self.shape)
 
-    self.fixture:setUserData(self.name)
+    self.fixture:setUserData({ name = self.name, type = self.type })
 end
 
 function Interactive:draw()

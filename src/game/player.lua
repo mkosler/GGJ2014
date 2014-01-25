@@ -42,12 +42,9 @@ function Player:setLevel(level)
     self.level = level
 end
 
-function Player:setTerminal(terminal)
-    if terminal.attached then return end
-    terminal.attached = true
-
-    if self.terminal then self.terminal:reset() end
+function Player:setTerminal(terminal, mood)
     self.terminal = terminal
+    self.terminalMood = mood
 end
 
 function Player:setMood(mood)
@@ -74,14 +71,18 @@ function Player:update(dt)
     end
 
     if self.flags.up and self.terminal then
-        self.terminal:start()
+        self.terminal:setUserData("start")
+        self.terminal = nil
 
+        self:setMood(self.terminalMood)
+        self.level:setMood(self.terminalMood)
+
+        --[[
         local mood = self.terminal.mood:lower()
 
         self:setMood(mood)
         self.level:setMood(mood)
-
-        self.terminal = nil
+        ]]
     end
 end
 

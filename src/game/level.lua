@@ -135,6 +135,12 @@ function Level:loadCollisions(group)
     end
 end
 
+function Level:update(dt)
+    for i,interactive in ipairs(self.interactives) do
+        if interactive.update then interactive:update(dt) end
+    end
+end
+
 function Level:draw()
     love.graphics.setColor(255, 255, 255)
     self:drawTilelayers()
@@ -150,14 +156,12 @@ end
 function Level:drawInteractives()
     for _,interactive in ipairs(self.interactives) do
         interactive:draw()
-        --[[
-        if interactive.visible then
-            local ts = self.tilesets[1]
-            local x, y = interactive.fixture:getBoundingBox()
+    end
 
-            love.graphics.draw(ts.image, ts.quads[interactive.gid], math.floor(x), math.floor(y - self.data.tileheight))
+    for _,interactive in ipairs(self.interactives) do
+        if interactive.name == "Terminal" then
+            interactive.text:draw()
         end
-        ]]
     end
 end
 
