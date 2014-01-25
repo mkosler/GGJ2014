@@ -48,13 +48,19 @@ end
 
 function Level:loadLayers()
     self.tilelayers = {}
-    self.objects = {}
+    self.interactives = {}
+    self.collisions = {}
 
     for _,layer in ipairs(self.data.layers) do
+        print(layer.type)
         if layer.type == "tilelayer" then
             self:loadTilelayer(layer)
         elseif layer.type == "objectgroup" then
-            self:loadObjectgroup(layer)
+            if layer.name == "Interactives" then
+                self:loadInteractives(layer)
+            elseif layer.name == "Collisions" then
+                self:loadCollisions(layer)
+            end
         end
     end
 end
@@ -65,7 +71,6 @@ function Level:loadTilelayer(layer)
     local canvas = love.graphics.newCanvas(self.data.width * self.data.tilewidth, self.data.height * self.data.tileheight)
 
     love.graphics.setCanvas(canvas)
-
     for i,tid in ipairs(layer.data) do
         if tid > 0 then
             local quad = self.tilesets[1].quads[tid]
@@ -79,33 +84,51 @@ function Level:loadTilelayer(layer)
             love.graphics.draw(self.tilesets[1].image, quad, x, y)
         end
     end
-
     love.graphics.setCanvas()
 
     table.insert(self.tilelayers, canvas)
 end
 
-function Level:loadObjectgroup(group)
+function Level:loadInteractives(group)
     if not group.visible or group.opacity == 0 then return end
 
     for _,object in ipairs(group.objects) do
         local o = {}
-        o.body = love.physics.newBody(self.world, object.x + self.data.tilewidth / 2, object.y - self.data.tileheight / 2, "static")
-        o.shape = love.physics.newRectangleShape(self.data.tilewidth, self.data.tileheight)
-        o.fixture = love.physics.newFixture(o.body, o.shape)
+
         o.name = object.name
         o.type = object.type
-        o.gid = object.gid
 
-        if o.name == "Terminal" or o.name == "Exit" then
+        o.body = love.physics.newBody(self.world, object.x + object.width / 2, object.y + object.height / 2, "static")
+        o.shape = love.physics.newRectangleShape(object.width, object.height)
+        o.fixture = love.physics.newFixture(o.body, o.shape)
+
+        if o.name ~= "Barrier" then
             o.fixture:setSensor(true)
         end
 
-        table.insert(self.objects, o)
+        table.insert(self.interactives, o)
+    end
+end
+
+function Level:loadCollisions(group)
+    if not group.visible or group.opacity == 0 then return end
+
+    for _,object in ipairs(group.objects) do
+        local o = {}
+
+        o.name = object.name
+        o.type = object.type
+
+        o.body = love.physics.newBody(self.world, object.x + object.width / 2, object.y + object.height / 2, "static")
+        o.shape = love.physics.newRectangleShape(object.width, object.height)
+        o.fixture = love.physics.newFixture(o.body, o.shape)
+
+        table.insert(self.interactives, o)
     end
 end
 
 function Level:draw()
+    love.graphics.setColor(255, 255, 255)
     self:drawTilelayers()
     self:drawObjects()
 end
@@ -117,11 +140,14 @@ function Level:drawTilelayers()
 end
 
 function Level:drawObjects()
-    for _,object in ipairs(self.objects) do
-        local x, y = object.fixture:getBoundingBox()
-        x, y = math.ceil(x), math.ceil(y)
+    love.graphics.setColor(255, 0, 0)
 
-        love.graphics.draw(self.tilesets[1].image, self.tilesets[1].quads[object.gid], x, y)
+    for _,object in ipairs(self.interactives) do
+        love.graphics.polygon("line", object.body:getWorldPoints(object.shape:getPoints()))
+    end
+
+    for _,object in ipairs(self.collisions) do
+        love.graphics.polygon("line", object.body:getWorldPoints(object.shape:getPoints()))
     end
 end
 

@@ -4,14 +4,22 @@ local Player = Class{}
 function Player:init(world, x, y)
     self.image = love.graphics.newImage("assets/images/robot.png")
 
+    self.moods = {
+        neutral = love.graphics.newQuad(0, 0, 16, 16, self.image:getWidth(), self.image:getHeight()),
+        happy = love.graphics.newQuad(16, 0, 16, 16, self.image:getWidth(), self.image:getHeight()),
+        sad = love.graphics.newQuad(32, 0, 16, 16, self.image:getWidth(), self.image:getHeight()),
+    }
+
+    self.moods.current = self.moods.neutral
+
     self.body = love.physics.newBody(world, x, y, "dynamic")
-    self.shape = love.physics.newRectangleShape(width, height)
+    self.shape = love.physics.newRectangleShape(16, 16)
     self.fixture = love.physics.newFixture(self.body, self.shape)
 
     self.body:setFixedRotation(true)
 
     self.foot = {}
-    self.foot.shape = love.physics.newRectangleShape(0, height / 2, width / 4, height / 4)
+    self.foot.shape = love.physics.newRectangleShape(0, 16 / 2, 16 / 4, 16 / 4)
     self.foot.fixture = love.physics.newFixture(self.body, self.foot.shape)
 
     self.foot.fixture:setSensor(true)
@@ -22,8 +30,6 @@ function Player:init(world, x, y)
         right = false,
         [" "] = false,
         jumping = false,
-        happy = false,
-        sad = false,
     }
 end
 
@@ -41,8 +47,13 @@ function Player:update(dt)
 end
 
 function Player:draw()
-    love.graphics.setColor(255, 255, 0)
-    love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
+    love.graphics.setColor(255, 255, 255)
+
+    local x, y = self.fixture:getBoundingBox()
+    love.graphics.draw(self.image, self.moods.current, x, y)
+
+    love.graphics.setColor(255, 0, 0)
+    love.graphics.polygon("line", self.body:getWorldPoints(self.shape:getPoints()))
 end
 
 function Player:keypressed(key, code)

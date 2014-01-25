@@ -50,7 +50,6 @@ end
 function love.draw()
     love.graphics.scale(3, 3)
 
-    love.graphics.setColor(255, 255, 255)
     level:draw()
     player:draw()
 end
