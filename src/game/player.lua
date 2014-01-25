@@ -1,48 +1,87 @@
 local Class = require("lib.hump.class")
 
+local PLAYER = require("init").PLAYER
+
 local Player = Class{}
 function Player:init(world, x, y)
-    self.image = love.graphics.newImage("assets/images/robot.png")
+    self.image = PLAYER.IMAGE
 
     self.moods = {
-        neutral = love.graphics.newQuad(0, 0, 16, 16, self.image:getWidth(), self.image:getHeight()),
-        happy = love.graphics.newQuad(16, 0, 16, 16, self.image:getWidth(), self.image:getHeight()),
-        sad = love.graphics.newQuad(32, 0, 16, 16, self.image:getWidth(), self.image:getHeight()),
+        neutral = love.graphics.newQuad(0, 0, PLAYER.WIDTH, PLAYER.HEIGHT, self.image:getWidth(), self.image:getHeight()),
+        happy = love.graphics.newQuad(PLAYER.WIDTH, 0, PLAYER.WIDTH, PLAYER.HEIGHT, self.image:getWidth(), self.image:getHeight()),
+        sad = love.graphics.newQuad(PLAYER.WIDTH * 2, 0, PLAYER.WIDTH, PLAYER.HEIGHT, self.image:getWidth(), self.image:getHeight()),
     }
 
     self.moods.current = self.moods.neutral
 
+    self.terminal = nil
+
+    self.flags = {
+        left = false,
+        right = false,
+        up = false,
+        [" "] = false,
+        jumping = false,
+    }
+
     self.body = love.physics.newBody(world, x, y, "dynamic")
-    self.shape = love.physics.newRectangleShape(16, 16)
+    self.shape = love.physics.newRectangleShape(PLAYER.WIDTH, PLAYER.HEIGHT)
     self.fixture = love.physics.newFixture(self.body, self.shape)
 
     self.body:setFixedRotation(true)
 
     self.foot = {}
-    self.foot.shape = love.physics.newRectangleShape(0, 16 / 2, 16 / 4, 16 / 4)
+    self.foot.shape = love.physics.newRectangleShape(0, PLAYER.HEIGHT / 2, PLAYER.WIDTH / 4, PLAYER.HEIGHT / 4)
     self.foot.fixture = love.physics.newFixture(self.body, self.foot.shape)
 
     self.foot.fixture:setSensor(true)
     self.foot.fixture:setUserData("foot")
+end
 
-    self.flags = {
-        left = false,
-        right = false,
-        [" "] = false,
-        jumping = false,
-    }
+function Player:setLevel(level)
+    self.level = level
+end
+
+function Player:setTerminal(terminal)
+    if terminal.attached then return end
+    terminal.attached = true
+
+    if self.terminal then self.terminal:reset() end
+    self.terminal = terminal
+end
+
+function Player:setMood(mood)
+    self.moods.current = self.moods[mood]
 end
 
 function Player:update(dt)
     if self.flags.left then
-        self.body:applyLinearImpulse(-10 * self.body:getMass(), 0)
+        local IMPULSE = PLAYER.PHYSICS.IMPULSES.LEFT
+
+        self.body:applyLinearImpulse(IMPULSE[1] * self.body:getMass(), IMPULSE[2] * self.body:getMass())
     elseif self.flags.right then
-        self.body:applyLinearImpulse(10 * self.body:getMass(), 0)
+        local IMPULSE = PLAYER.PHYSICS.IMPULSES.RIGHT
+
+        self.body:applyLinearImpulse(IMPULSE[1] * self.body:getMass(), IMPULSE[2] * self.body:getMass())
     end
 
     if self.flags[" "] and not self.flags.jumping then
+        local IMPULSE = PLAYER.PHYSICS.IMPULSES.JUMP
+
         self.flags.jumping = true
-        self.body:applyLinearImpulse(0, -600 * self.body:getMass())
+
+        self.body:applyLinearImpulse(IMPULSE[1] * self.body:getMass(), IMPULSE[2] * self.body:getMass())
+    end
+
+    if self.flags.up and self.terminal then
+        self.terminal:start()
+
+        local mood = self.terminal.mood:lower()
+
+        self:setMood(mood)
+        self.level:setMood(mood)
+
+        self.terminal = nil
     end
 end
 
@@ -51,9 +90,6 @@ function Player:draw()
 
     local x, y = self.fixture:getBoundingBox()
     love.graphics.draw(self.image, self.moods.current, x, y)
-
-    love.graphics.setColor(255, 0, 0)
-    love.graphics.polygon("line", self.body:getWorldPoints(self.shape:getPoints()))
 end
 
 function Player:keypressed(key, code)

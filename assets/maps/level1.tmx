@@ -5,7 +5,7 @@
  </tileset>
  <layer name="Platforms" width="10" height="10">
   <data encoding="base64" compression="zlib">
-   eJxjY2BgYAdiRgKYG4h5oGxcAFk9PkCMGnR1XGjiuOxFxixE2suBwywQ4MShjljz8LkPGwYAbfAAfQ==
+   eJxjY2BgYAdiRgKYG4h5oGxcAFk9PkCMGnzq0MVwuZmFDHuJ9QOx5uFzHzYMAFeQAFI=
   </data>
  </layer>
  <objectgroup name="Collisions" width="10" height="10">
@@ -20,8 +20,10 @@
   <object x="16" y="80" width="64" height="16"/>
  </objectgroup>
  <objectgroup name="Interactives" width="10" height="10">
-  <object name="Barrier" type="happy" x="80" y="96" width="16" height="48"/>
-  <object name="Terminal" type="happy" x="32" y="112" width="16" height="16"/>
-  <object name="Exit" x="32" y="64" width="16" height="16"/>
+  <object name="Barrier" type="happy" gid="8" x="80" y="112"/>
+  <object name="Barrier" type="happy" gid="8" x="80" y="128"/>
+  <object name="Barrier" type="happy" gid="8" x="80" y="144"/>
+  <object name="Terminal" type="happy" gid="9" x="48" y="144"/>
+  <object name="Exit" gid="10" x="32" y="80"/>
  </objectgroup>
 </map>

@@ -41,7 +41,6 @@ function Level:createQuads(ts, image)
             table.insert(quads, quad)
         end
     end
-    print()
 
     return quads
 end
@@ -52,7 +51,6 @@ function Level:loadLayers()
     self.collisions = {}
 
     for _,layer in ipairs(self.data.layers) do
-        print(layer.type)
         if layer.type == "tilelayer" then
             self:loadTilelayer(layer)
         elseif layer.type == "objectgroup" then
@@ -97,16 +95,29 @@ function Level:loadInteractives(group)
 
         o.name = object.name
         o.type = object.type
+        o.gid = object.gid
+        o.visible = object.visible
 
-        o.body = love.physics.newBody(self.world, object.x + object.width / 2, object.y + object.height / 2, "static")
-        o.shape = love.physics.newRectangleShape(object.width, object.height)
+        o.body = love.physics.newBody(self.world, object.x + self.data.tilewidth / 2, object.y + self.data.tileheight / 2, "static")
+        o.shape = love.physics.newRectangleShape(self.data.tilewidth, self.data.tileheight)
         o.fixture = love.physics.newFixture(o.body, o.shape)
 
         if o.name ~= "Barrier" then
             o.fixture:setSensor(true)
         end
 
+        o.fixture:setUserData(o.name)
+
         table.insert(self.interactives, o)
+    end
+end
+
+function Level:setMood(mood)
+    for i,interactive in ipairs(self.interactives) do
+        if interactive.name == "Barrier" then
+            interactive.body:setActive(interactive.type ~= mood)
+            interactive.visible = false
+        end
     end
 end
 
@@ -130,12 +141,23 @@ end
 function Level:draw()
     love.graphics.setColor(255, 255, 255)
     self:drawTilelayers()
-    self:drawObjects()
+    self:drawInteractives()
 end
 
 function Level:drawTilelayers()
     for _,layer in ipairs(self.tilelayers) do
         love.graphics.draw(layer)
+    end
+end
+
+function Level:drawInteractives()
+    for _,interactive in ipairs(self.interactives) do
+        if interactive.visible then
+            local ts = self.tilesets[1]
+            local x, y = interactive.fixture:getBoundingBox()
+
+            love.graphics.draw(ts.image, ts.quads[interactive.gid], math.floor(x), math.floor(y - self.data.tileheight))
+        end
     end
 end
 
