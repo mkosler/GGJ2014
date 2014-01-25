@@ -36,9 +36,11 @@ function Level:load()
                 isExit = bit32.btest(tile, 0x80),
             }
 
-            tile.body = love.physics.newBody(self.world, x + self.tilewidth / 2, y + self.tileheight / 2, "static")
-            tile.shape = love.physics.newRectangleShape(self.tilewidth, self.tileheight)
-            tile.fixture = love.physics.newFixture(tile.body, tile.shape)
+            if tile.isNeutralSolid or tile.isHappySolid or tile.isSadSolid then
+                tile.body = love.physics.newBody(self.world, x + self.tilewidth / 2, y + self.tileheight / 2, "static")
+                tile.shape = love.physics.newRectangleShape(self.tilewidth, self.tileheight)
+                tile.fixture = love.physics.newFixture(tile.body, tile.shape)
+            end
 
             table.insert(self.tiles, tile)
 
@@ -58,25 +60,27 @@ function Level:renderToCanvas()
 
     love.graphics.setCanvas(self.canvas)
     for _,tile in ipairs(self.tiles) do
-        local x, y = tile.fixture:getBoundingBox()
+        if tile.body then
+            local x, y = tile.fixture:getBoundingBox()
 
-        if tile.isNeutralSolid then
-            love.graphics.setColor(0, 255, 0)
-            love.graphics.rectangle("fill", x, y, self.tilewidth / 3, self.tileheight)
+            if tile.isNeutralSolid then
+                love.graphics.setColor(0, 255, 0)
+                love.graphics.rectangle("fill", x, y, self.tilewidth / 3, self.tileheight)
+            end
+
+            if tile.isHappySolid then
+                love.graphics.setColor(0, 0, 255)
+                love.graphics.rectangle("fill", x + self.tilewidth / 3, y, self.tilewidth / 3, self.tileheight)
+            end
+
+            if tile.isSadSolid then
+                love.graphics.setColor(255, 0, 0)
+                love.graphics.rectangle("fill", x + 2 * self.tilewidth / 3, y, self.tilewidth / 3, self.tileheight)
+            end
+
+            love.graphics.setColor(255, 255, 255)
+            love.graphics.polygon("line", tile.body:getWorldPoints(tile.shape:getPoints()))
         end
-
-        if tile.isHappySolid then
-            love.graphics.setColor(0, 0, 255)
-            love.graphics.rectangle("fill", x + self.tilewidth / 3, y, self.tilewidth / 3, self.tileheight)
-        end
-
-        if tile.isSadSolid then
-            love.graphics.setColor(255, 0, 0)
-            love.graphics.rectangle("fill", x + 2 * self.tilewidth / 3, y, self.tilewidth / 3, self.tileheight)
-        end
-
-        love.graphics.setColor(255, 255, 255)
-        love.graphics.polygon("line", tile.body:getWorldPoints(tile.shape:getPoints()))
     end
     love.graphics.setCanvas()
 end
