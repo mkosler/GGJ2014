@@ -7,8 +7,25 @@ local Player = require("src.game.player")
 --[[ STATES ]]
 
 --[[ FUNCTIONS ]]
+
+function beginContact(a, b, coll)
+    if a:getUserData() == "foot" or b:getUserData() == "foot" then
+        player.flags.jumping = false
+    end
+end
+
+function endContact(a, b, coll)
+end
+
+function preSolve(a, b, coll)
+end
+
+function postSolve(a, b, coll)
+end
+
 function love.load()
     world = love.physics.newWorld(0, 9.81 * 50, true)
+    world:setCallbacks(beginContact, endContact, preSolve, postSolve)
     love.physics.setMeter(50)
     level = Level(world, "assets/maps/test.txt", 50, 50)
     level:load()
