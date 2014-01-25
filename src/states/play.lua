@@ -12,7 +12,12 @@ function Play.beginContact(a, b, coll)
         Play.player.flags.jumping = false
     end
 
-    if aud and  aud.name == "Terminal" then
+    if aud == "foot" and bud and bud.name == "Exit" or
+       aud and aud.name == "Exit" and bud == "foot" then
+       love.event.quit()
+    end
+
+    if aud and aud.name == "Terminal" then
         Play.player:setTerminal(a, aud.type)
     elseif bud and bud.name == "Terminal" then
         Play.player:setTerminal(b, bud.type)
@@ -49,6 +54,7 @@ function Play:enter(previous)
 end
 
 function Play:leave()
+    love.event.quit()
 end
 
 function Play:update(dt)

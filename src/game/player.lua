@@ -29,6 +29,7 @@ function Player:init(world, x, y)
     self.fixture = love.physics.newFixture(self.body, self.shape)
 
     self.body:setFixedRotation(true)
+    self.fixture:setUserData("Player")
 
     self.foot = {}
     self.foot.shape = love.physics.newRectangleShape(0, PLAYER.HEIGHT / 2, PLAYER.WIDTH / 4, PLAYER.HEIGHT / 4)
