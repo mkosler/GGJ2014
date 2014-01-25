@@ -17,6 +17,7 @@ end
 
 function love.update(dt)
     world:update(dt)
+    player:update(dt)
 end
 
 function love.draw()
@@ -29,4 +30,10 @@ function love.keypressed(key, code)
     if key == "escape" then
         love.event.quit()
     end
+
+    player:keypressed(key, code)
+end
+
+function love.keyreleased(key, code)
+    player:keyreleased(key, code)
 end
