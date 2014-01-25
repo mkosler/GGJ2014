@@ -27,15 +27,16 @@ function love.load()
     world = love.physics.newWorld(0, 9.81 * 50, true)
     world:setCallbacks(beginContact, endContact, preSolve, postSolve)
     love.physics.setMeter(50)
-    level = Level(world, "assets/maps/test.txt", 50, 50)
+    level = Level(world, "assets.maps.level1")
     level:load()
-    player = Player(world, 100, 100, 25, 50)
+    player = Player(world, 100, 100)
 end
 
 function love.update(dt)
     world:update(dt)
     player:update(dt)
 
+    --[[
     if player.flags.happy then
         level:setCanvas("happy")
     elseif player.flags.sad then
@@ -43,9 +44,12 @@ function love.update(dt)
     else
         level:setCanvas("neutral")
     end
+    ]]
 end
 
 function love.draw()
+    love.graphics.scale(3, 3)
+
     love.graphics.setColor(255, 255, 255)
     level:draw()
     player:draw()

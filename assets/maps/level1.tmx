@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="10" height="10" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="GGJ2014" tilewidth="16" tileheight="16">
+  <image source="../images/tilesheet.png" width="80" height="48"/>
+ </tileset>
+ <layer name="Platforms" width="10" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjY2BgYAdiRgKYG4h5oGxcAFk9PkCMGnzq0MVwuZmFDHuJ9QOx5uFzHzYMAFeQAFI=
+  </data>
+ </layer>
+ <objectgroup name="Objects" width="10" height="10">
+  <object name="Terminal" type="happy" gid="9" x="32" y="128"/>
+  <object name="Door" type="happy" gid="8" x="80" y="144"/>
+  <object name="Door" type="happy" gid="8" x="80" y="128"/>
+  <object name="Door" type="happy" gid="8" x="80" y="112"/>
+  <object name="Exit" gid="10" x="32" y="80"/>
+ </objectgroup>
+</map>

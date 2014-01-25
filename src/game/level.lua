@@ -1,124 +1,128 @@
-local bit32 = require("lib.numberlua")
 local Class = require("lib.hump.class")
 
 local Level = Class{}
-function Level:init(world, filepath, tilewidth, tileheight)
+function Level:init(world, filepath)
     self.world = world
-
     self.filepath = filepath
-
-    self.tilewidth = tilewidth
-    self.tileheight = tileheight
-
-    self.tiles = {}
-    self.canvases = {}
 end
 
 function Level:load()
-    local contents = love.filesystem.read(self.filepath)
+    self.data = require(self.filepath)
 
-    local r, c = 0, 0
-
-    for line in contents:gmatch("[^\n]+") do
-        c = 0
-
-        for tile in line:gmatch("%x+") do
-            local x = c * self.tilewidth
-            local y = r * self.tileheight
-
-            local tile = {
-                isNeutralSolid = bit32.btest(tile, 0x01),
-                isHappySolid = bit32.btest(tile, 0x02),
-                isSadSolid = bit32.btest(tile, 0x04),
-                isEntrance = bit32.btest(tile, 0x08),
-                requiresNeutralKey = bit32.btest(tile, 0x10),
-                requiresHappyKey = bit32.btest(tile, 0x20),
-                requiresSadKey = bit32.btest(tile, 0x40),
-                isExit = bit32.btest(tile, 0x80),
-            }
-
-            if tile.isNeutralSolid or tile.isHappySolid or tile.isSadSolid then
-                tile.body = love.physics.newBody(self.world, x + self.tilewidth / 2, y + self.tileheight / 2, "static")
-                tile.shape = love.physics.newRectangleShape(self.tilewidth, self.tileheight)
-                tile.fixture = love.physics.newFixture(tile.body, tile.shape)
-            end
-
-            table.insert(self.tiles, tile)
-
-            c = c + 1
-        end
-
-        r = r + 1
-    end
-
-    self.rows, self.columns = r, c
-
-    self:renderToCanvas()
+    self:loadTilesets()
+    self:loadLayers()
 end
 
-function Level:renderToCanvas()
-    self.canvases.neutral = love.graphics.newCanvas(self.rows * self.tilewidth, self.columns * self.tileheight)
-    self.canvases.happy = love.graphics.newCanvas(self.rows * self.tilewidth, self.columns * self.tileheight)
-    self.canvases.sad = love.graphics.newCanvas(self.rows * self.tilewidth, self.columns * self.tileheight)
+function Level:loadTilesets()
+    self.tilesets = {}
 
-    for _,tile in ipairs(self.tiles) do
-        if tile.body then
-            local x, y = tile.fixture:getBoundingBox()
+    for _,tileset in ipairs(self.data.tilesets) do
+        local ts = {}
 
-            local function drawTile()
-                love.graphics.setColor(255, 255, 255)
-                love.graphics.polygon("fill", tile.body:getWorldPoints(tile.shape:getPoints()))
-            end
+        ts.image = love.graphics.newImage(tileset.image)
+        ts.quads = self:createQuads(tileset, ts.image)
 
-            if tile.isNeutralSolid then
-                self.canvases.neutral:renderTo(drawTile)
-            end
-
-            if tile.isHappySolid then
-                self.canvases.happy:renderTo(drawTile)
-            end
-
-            if tile.isSadSolid then
-                self.canvases.sad:renderTo(drawTile)
-            end
-        end
+        table.insert(self.tilesets, ts)
     end
-
-    self.canvases.current = self.canvases.neutral
 end
 
-function Level:resetTiles()
-    for _,tile in ipairs(self.tiles) do
-        if tile.body then
-            tile.body:setActive(true)
+function Level:createQuads(ts, image)
+    local quads = {}
+
+    local mx = ts.imagewidth - ts.margin - ts.tilewidth
+    local my = ts.imageheight - ts.margin - ts.tileheight
+    local dx = ts.tilewidth + ts.spacing
+    local dy = ts.tileheight + ts.spacing
+
+    for y = ts.margin, my, dy do
+        for x = ts.margin, mx, dx do
+            local quad = love.graphics.newQuad(x, y, ts.tilewidth, ts.tileheight, ts.imagewidth, ts.imageheight)
+
+            table.insert(quads, quad)
+        end
+    end
+    print()
+
+    return quads
+end
+
+function Level:loadLayers()
+    self.tilelayers = {}
+    self.objects = {}
+
+    for _,layer in ipairs(self.data.layers) do
+        if layer.type == "tilelayer" then
+            self:loadTilelayer(layer)
+        elseif layer.type == "objectgroup" then
+            self:loadObjectgroup(layer)
         end
     end
 end
 
-function Level:deactivateTiles(canvas)
-    for _,tile in ipairs(self.tiles) do
-        if tile.body then
-            if canvas == "neutral" and not tile.isNeutralSolid then
-                tile.body:setActive(false)
-            elseif canvas == "happy" and not tile.isHappySolid then
-                tile.body:setActive(false)
-            elseif canvas == "sad" and not tile.isSadSolid then
-                tile.body:setActive(false)
-            end
+function Level:loadTilelayer(layer)
+    if layer.opacity == 0 or not layer.visible then return end
+
+    local canvas = love.graphics.newCanvas(self.data.width * self.data.tilewidth, self.data.height * self.data.tileheight)
+
+    love.graphics.setCanvas(canvas)
+
+    for i,tid in ipairs(layer.data) do
+        if tid > 0 then
+            local quad = self.tilesets[1].quads[tid]
+
+            local r = math.floor((i - 1) / layer.width)
+            local c = (i - 1) % layer.width
+
+            local x = c * self.data.tilewidth
+            local y = r * self.data.tileheight
+
+            love.graphics.draw(self.tilesets[1].image, quad, x, y)
         end
     end
+
+    love.graphics.setCanvas()
+
+    table.insert(self.tilelayers, canvas)
 end
 
-function Level:setCanvas(canvas)
-    self:resetTiles()
+function Level:loadObjectgroup(group)
+    if not group.visible or group.opacity == 0 then return end
 
-    self.canvases.current = self.canvases[canvas]
+    for _,object in ipairs(group.objects) do
+        local o = {}
+        o.body = love.physics.newBody(self.world, object.x + self.data.tilewidth / 2, object.y - self.data.tileheight / 2, "static")
+        o.shape = love.physics.newRectangleShape(self.data.tilewidth, self.data.tileheight)
+        o.fixture = love.physics.newFixture(o.body, o.shape)
+        o.name = object.name
+        o.type = object.type
+        o.gid = object.gid
 
-    self:deactivateTiles(canvas)
+        if o.name == "Terminal" or o.name == "Exit" then
+            o.fixture:setSensor(true)
+        end
+
+        table.insert(self.objects, o)
+    end
 end
 
 function Level:draw()
-    love.graphics.draw(self.canvases.current)
+    self:drawTilelayers()
+    self:drawObjects()
+end
+
+function Level:drawTilelayers()
+    for _,layer in ipairs(self.tilelayers) do
+        love.graphics.draw(layer)
+    end
+end
+
+function Level:drawObjects()
+    for _,object in ipairs(self.objects) do
+        local x, y = object.fixture:getBoundingBox()
+        x, y = math.ceil(x), math.ceil(y)
+
+        love.graphics.draw(self.tilesets[1].image, self.tilesets[1].quads[object.gid], x, y)
+    end
 end
 
 return Level
