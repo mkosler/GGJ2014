@@ -87,8 +87,34 @@ function Level:renderToCanvas()
     self.canvases.current = self.canvases.neutral
 end
 
+function Level:resetTiles()
+    for _,tile in ipairs(self.tiles) do
+        if tile.body then
+            tile.body:setActive(true)
+        end
+    end
+end
+
+function Level:deactivateTiles(canvas)
+    for _,tile in ipairs(self.tiles) do
+        if tile.body then
+            if canvas == "neutral" and not tile.isNeutralSolid then
+                tile.body:setActive(false)
+            elseif canvas == "happy" and not tile.isHappySolid then
+                tile.body:setActive(false)
+            elseif canvas == "sad" and not tile.isSadSolid then
+                tile.body:setActive(false)
+            end
+        end
+    end
+end
+
 function Level:setCanvas(canvas)
+    self:resetTiles()
+
     self.canvases.current = self.canvases[canvas]
+
+    self:deactivateTiles(canvas)
 end
 
 function Level:draw()

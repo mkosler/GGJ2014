@@ -63,6 +63,14 @@ function Player:update(dt)
         self.flags.sad = false
         self.meters.sad:regenerate(dt)
     end
+
+    if self.meters.happy:getPercentage() <= 0 then
+        self.flags.happy = false
+    end
+
+    if self.meters.sad:getPercentage() <= 0 then
+        self.flags.sad = false
+    end
 end
 
 function Player:draw()
