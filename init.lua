@@ -64,7 +64,7 @@ return {
         HAPPY = {
             "NICE CENTRAL PROCESSING UNIT",
             "YOUR THREADS LOOK VERY PARALLEL TODAY",
-            "THE MASTER COMPUTER IS PLEASED",
+            "THE MOTHERBOARD IS PLEASED",
         },
         SAD = {
             "YOUR POOR PERFORMANCE HAS BEEN RECORDED",

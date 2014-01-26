@@ -45,7 +45,6 @@ Made by:
 Michael Kosler for GGJ2014
 
 Created with:
-
 LOVE (http://love2d.org)
 
 Hosted by:
