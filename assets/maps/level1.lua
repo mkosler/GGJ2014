@@ -221,6 +221,17 @@ return {
           gid = 10,
           visible = true,
           properties = {}
+        },
+        {
+          name = "Entrance",
+          type = "",
+          shape = "rectangle",
+          x = 32,
+          y = 128,
+          width = 16,
+          height = 16,
+          visible = true,
+          properties = {}
         }
       }
     }

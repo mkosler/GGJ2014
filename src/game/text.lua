@@ -1,20 +1,17 @@
 local Class = require("lib.hump.class")
 local Timer = require("lib.hump.timer")
 
-local FONTS = require("init").FONTS
-local TERMINALS = require("init").TERMINALS
+local FONTS = INIT.FONTS
+local TERMINALS = INIT.TERMINALS
 
 local Text = Class{}
-function Text:init(mood, size)
+function Text:init(mood, size, limit)
+    self.limit = limit
     self.mood = mood:upper()
     self.size = size or 12
 
     self.font = FONTS[self.size]
-
-    self.image = TERMINALS.IMAGE
-
-    self.x = (love.window.getWidth() - self.image:getWidth()) / 2
-    self.y = (love.window.getHeight() - self.image:getHeight()) / 2
+    love.graphics.setFont(self.font)
 
     local rand = math.random(#TERMINALS[self.mood])
     self.text = TERMINALS[self.mood][rand]
@@ -23,12 +20,6 @@ function Text:init(mood, size)
 
     self.started = false
     self.attached = false
-end
-
-function Text:reset()
-    self.started = false
-    self.attached = false
-    self.visibleText = ""
 end
 
 function Text:start()
@@ -42,18 +33,15 @@ function Text:start()
         j = j + 1
     end, self.text:len() + 1)
 
-    Timer.add(TERMINALS.TEXT_SPEED * (self.text:len() + 1 + TERMINALS.BUFFER_LENGTH), function () self:reset() end)
+    local total = TERMINALS.TEXT_SPEED * (self.text:len() + 1 + TERMINALS.BUFFER_LENGTH)
+
+    return total
 end
 
-function Text:draw()
+function Text:draw(x, y)
     if not self.started then return end
 
-    love.graphics.setFont(self.font)
-
-    love.graphics.setColor(255, 255, 255)
-    love.graphics.draw(self.image, self.x, self.y)
-
-    love.graphics.printf(self.visibleText, self.x + 4, self.y + 4, 88)
+    love.graphics.printf(self.visibleText, x + 4, y + 4, self.limit)
 end
 
 return Text

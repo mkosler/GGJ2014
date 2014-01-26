@@ -1,8 +1,10 @@
-local Class = require("lib.hump.class")
-local Interactive = require("src.game.interactives.interactive")
 local Barrier = require("src.game.interactives.barrier")
-local Terminal = require("src.game.interactives.terminal")
+local Button = require("src.game.interactives.button")
+local Class = require("lib.hump.class")
 local Exit = require("src.game.interactives.exit")
+local Interactive = require("src.game.interactives.interactive")
+local Terminal = require("src.game.interactives.terminal")
+local Wall = require("src.game.interactives.wall")
 
 local Level = Class{}
 function Level:init(world, filepath)
@@ -103,10 +105,30 @@ function Level:loadInteractives(group)
             interactive = Terminal(self.world, self.tilesets[1].image, self.tilesets[1].quads[object.gid], object)
         elseif object.name == "Exit" then
             interactive = Exit(self.world, self.tilesets[1].image, self.tilesets[1].quads[object.gid], object)
+        elseif object.name == "Button" then
+            interactive = Button(self.world, self.tilesets[1].image, self.tilesets[1].quads[object.gid], object, self.tilesets[1].quads[object.gid + 1])
+        elseif object.name == "Wall" then
+            interactive = Wall(self.world, self.tilesets[1].image, self.tilesets[1].quads[object.gid], object)
+        elseif object.name == "Entrance" then
+            self.entrance = { x = object.x, y = object.y }
         end
 
         table.insert(self.interactives, interactive)
     end
+
+    for _,interactive in ipairs(self.interactives) do
+        if interactive.name == "Wall" then
+            for _,button in ipairs(self.interactives) do
+                if interactive.type == button.type then
+                    interactive:setButton(button)
+                end
+            end
+        end
+    end
+end
+
+function Level:getEntrance()
+    if self.entrance then return self.entrance.x, self.entrance.y end
 end
 
 function Level:setMood(mood)
@@ -142,7 +164,6 @@ function Level:update(dt)
 end
 
 function Level:draw()
-    love.graphics.setColor(255, 255, 255)
     self:drawTilelayers()
     self:drawInteractives()
 end
@@ -156,24 +177,6 @@ end
 function Level:drawInteractives()
     for _,interactive in ipairs(self.interactives) do
         interactive:draw()
-    end
-
-    for _,interactive in ipairs(self.interactives) do
-        if interactive.name == "Terminal" then
-            interactive.text:draw()
-        end
-    end
-end
-
-function Level:drawObjects()
-    love.graphics.setColor(255, 0, 0)
-
-    for _,object in ipairs(self.interactives) do
-        love.graphics.polygon("line", object.body:getWorldPoints(object.shape:getPoints()))
-    end
-
-    for _,object in ipairs(self.collisions) do
-        love.graphics.polygon("line", object.body:getWorldPoints(object.shape:getPoints()))
     end
 end
 

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="40" height="30" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="GGJ2014" tilewidth="32" tileheight="32">
+  <image source="../images/tilesheet.png" width="160" height="64"/>
+ </tileset>
+ <layer name="Platforms" width="40" height="30">
+  <data encoding="base64" compression="zlib">
+   eJztlEsOwCAIRLWf+1+5C3eE1AHs2BBeMhuDmbdAe2utVyoVOJJLOZMcwMwMrx+LrH6R3bDez+hn6WD5aX1/8vN2aJzKmfYffb1/UTw96J17kx+zj+2Hdlr92G+L5SedUEev3xsr5iN+CKscrX4WLPM7/GYeiCPbz0sWv0qlMvIA/RoDQw==
+  </data>
+ </layer>
+ <objectgroup name="Collisions" width="40" height="30">
+  <object x="128" y="800" width="1024" height="32"/>
+  <object x="1120" y="352" width="32" height="448"/>
+  <object x="800" y="352" width="320" height="32"/>
+  <object x="800" y="384" width="32" height="32"/>
+  <object x="960" y="384" width="32" height="32"/>
+  <object x="736" y="480" width="320" height="32"/>
+  <object x="768" y="512" width="64" height="32"/>
+  <object x="800" y="544" width="64" height="32"/>
+  <object x="832" y="576" width="32" height="64"/>
+  <object x="864" y="608" width="32" height="96"/>
+  <object x="896" y="672" width="32" height="64"/>
+  <object x="928" y="704" width="128" height="32"/>
+  <object x="1024" y="512" width="32" height="192"/>
+  <object x="288" y="256" width="352" height="32"/>
+  <object x="288" y="288" width="64" height="32"/>
+  <object x="320" y="320" width="64" height="32"/>
+  <object x="352" y="352" width="32" height="64"/>
+  <object x="320" y="384" width="32" height="64"/>
+  <object x="288" y="416" width="32" height="32"/>
+  <object x="256" y="448" width="352" height="32"/>
+  <object x="576" y="384" width="32" height="64"/>
+  <object x="608" y="288" width="32" height="128"/>
+  <object x="192" y="352" width="64" height="32"/>
+  <object x="128" y="544" width="512" height="32"/>
+  <object x="576" y="576" width="32" height="64"/>
+  <object x="480" y="640" width="160" height="32"/>
+  <object x="512" y="672" width="32" height="32"/>
+  <object x="448" y="608" width="64" height="32"/>
+  <object x="192" y="576" width="288" height="32"/>
+  <object x="160" y="608" width="64" height="32"/>
+  <object x="128" y="640" width="64" height="32"/>
+  <object x="128" y="672" width="32" height="128"/>
+  <object x="128" y="160" width="32" height="384"/>
+  <object x="128" y="128" width="1024" height="32"/>
+  <object x="1120" y="160" width="32" height="128"/>
+  <object x="800" y="256" width="320" height="32"/>
+  <object x="800" y="288" width="32" height="64"/>
+  <object x="288" y="160" width="32" height="32"/>
+  <object x="576" y="160" width="32" height="32"/>
+  <object x="704" y="576" width="32" height="32"/>
+  <object x="672" y="704" width="96" height="32"/>
+ </objectgroup>
+ <objectgroup name="Interactives" width="40" height="30">
+  <object name="Entrance" x="288" y="768" width="32" height="32"/>
+  <object name="Terminal" type="happy" gid="7" x="672" y="800"/>
+  <object name="Terminal" type="sad" gid="7" x="736" y="800"/>
+  <object name="Barrier" type="sad" gid="8" x="800" y="448"/>
+  <object name="Barrier" type="sad" gid="8" x="800" y="480"/>
+  <object name="Wall" type="1" gid="8" x="960" y="448"/>
+  <object name="Wall" type="1" gid="8" x="960" y="480"/>
+  <object name="Barrier" type="happy" gid="8" x="576" y="512"/>
+  <object name="Barrier" type="happy" gid="8" x="576" y="544"/>
+  <object name="Barrier" type="neutral" gid="8" x="288" y="224"/>
+  <object name="Barrier" type="neutral" gid="8" x="288" y="256"/>
+  <object name="Wall" type="1" gid="8" x="576" y="224"/>
+  <object name="Wall" type="1" gid="8" x="576" y="256"/>
+  <object name="Terminal" type="sad" gid="7" x="192" y="544"/>
+  <object name="Terminal" type="happy" gid="7" x="1024" y="480"/>
+  <object name="Button" type="1" gid="9" x="864" y="480"/>
+  <object name="Exit" gid="6" x="992" y="256"/>
+ </objectgroup>
+</map>

@@ -1,9 +1,11 @@
 local Class = require("lib.hump.class")
 
-local PLAYER = require("init").PLAYER
+local PLAYER = INIT.PLAYER
+local SOUNDS = INIT.SOUNDS
 
 local Player = Class{}
-function Player:init(world, x, y)
+function Player:init(world, x, y, plaque)
+    self.plaque = plaque
     self.image = PLAYER.IMAGE
 
     self.moods = {
@@ -41,6 +43,7 @@ end
 
 function Player:setLevel(level)
     self.level = level
+    self.level:setMood("neutral")
 end
 
 function Player:setTerminal(terminal, mood)
@@ -48,8 +51,36 @@ function Player:setTerminal(terminal, mood)
     self.terminalMood = mood
 end
 
+function Player:getMood()
+    for k,v in pairs(self.moods) do
+        if v == self.moods.current and k ~= "current" then
+            return k
+        end
+    end
+end
+
 function Player:setMood(mood)
-    self.moods.current = self.moods[mood]
+    local hierarchy = { "sad", "neutral", "happy" }
+    local index = { sad = 1, neutral = 2, happy = 3 }
+    local delta = 0
+
+    if mood == "sad" then
+        delta = -1
+        SOUNDS.PLAYER.BLIPS.SAD:play()
+    elseif mood == "neutral" then
+        delta = 0
+    elseif mood == "happy" then
+        SOUNDS.PLAYER.BLIPS.HAPPY:play()
+        delta = 1
+    end
+
+    local i = index[self:getMood()]
+
+    local mName = hierarchy[i + delta]
+    print(mName)
+
+    self.moods.current = self.moods[mName]
+    self.plaque:setMood(mName)
 end
 
 function Player:update(dt)
@@ -68,28 +99,23 @@ function Player:update(dt)
 
         self.flags.jumping = true
 
+        SOUNDS.PLAYER.JUMP:play()
+
         self.body:applyLinearImpulse(IMPULSE[1] * self.body:getMass(), IMPULSE[2] * self.body:getMass())
     end
 
     if self.flags.up and self.terminal then
-        self.terminal:setUserData("start")
+        self.terminal:setUserData("used")
+
+        self.plaque:start(self.terminalMood)
         self.terminal = nil
 
         self:setMood(self.terminalMood)
-        self.level:setMood(self.terminalMood)
-
-        --[[
-        local mood = self.terminal.mood:lower()
-
-        self:setMood(mood)
-        self.level:setMood(mood)
-        ]]
+        self.level:setMood(self:getMood())
     end
 end
 
 function Player:draw()
-    love.graphics.setColor(255, 255, 255)
-
     local x, y = self.fixture:getBoundingBox()
     love.graphics.draw(self.image, self.moods.current, x, y)
 end

@@ -23,8 +23,8 @@ function Interactive:draw()
     if not self.body:isActive() then return end
 
     local x, y = self.fixture:getBoundingBox()
-    x = math.floor(x)
-    y = math.floor(y - self.height)
+    x = math.ceil(x)
+    y = math.ceil(y - self.height)
 
     love.graphics.draw(self.image, self.quad, x, y)
 end
