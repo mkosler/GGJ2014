@@ -5,6 +5,8 @@ local Button = Class{ __includes = Interactive }
 function Button:init(world, image, quad, object, onquad)
     Interactive.init(self, world, image, quad, object)
 
+    self.fixture:setSensor(true)
+
     self.offquad = quad
     self.onquad = onquad
 

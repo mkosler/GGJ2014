@@ -166,6 +166,8 @@ end
 function Level:draw()
     self:drawTilelayers()
     self:drawInteractives()
+
+    --self:drawDoors()
 end
 
 function Level:drawTilelayers()
@@ -178,6 +180,20 @@ function Level:drawInteractives()
     for _,interactive in ipairs(self.interactives) do
         interactive:draw()
     end
+end
+
+function Level:drawDoors()
+    local color = { love.graphics.getColor() }
+
+    love.graphics.setColor(255, 0, 0)
+
+    for i,interactive in ipairs(self.interactives) do
+        if interactive.name == "Barrier" or interactive.name == "Wall" then
+            love.graphics.polygon("line", interactive.body:getWorldPoints(interactive.shape:getPoints()))
+        end
+    end
+
+    love.graphics.setColor(color)
 end
 
 return Level

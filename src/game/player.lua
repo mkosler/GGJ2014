@@ -77,7 +77,6 @@ function Player:setMood(mood)
     local i = index[self:getMood()]
 
     local mName = hierarchy[i + delta]
-    print(mName)
 
     self.moods.current = self.moods[mName]
     self.plaque:setMood(mName)

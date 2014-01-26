@@ -26,7 +26,7 @@ function Terminal:draw()
     else
         local x, y = self.fixture:getBoundingBox()
         x = math.ceil(x)
-        y = math.ceil(y - self.height)
+        y = math.ceil(y)
 
         love.graphics.draw(self.image, x, y)
     end

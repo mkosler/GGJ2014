@@ -26,7 +26,6 @@ function Plaque:init(x, y, width, height, textSize)
 
     self.text = nil
     self.textSize = textSize
-    print("PLAQUE TEXT_SIZE", self.textSize)
 end
 
 function Plaque:setImage(which)
@@ -42,7 +41,6 @@ function Plaque:setMood(mood)
 end
 
 function Plaque:start(mood)
-    print("kappa")
     self.text = Text(mood, self.textSize, self.width - self.image:getWidth() - 5)
     local time = self.text:start()
     self:setImage("terminal")

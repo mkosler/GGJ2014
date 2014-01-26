@@ -16,6 +16,8 @@ function Interactive:init(world, image, quad, object)
     self.shape = love.physics.newRectangleShape(self.width, self.height)
     self.fixture = love.physics.newFixture(self.body, self.shape)
 
+    self.body:setY(self.body:getY() - self.height)
+
     self.fixture:setUserData({ name = self.name, type = self.type })
 end
 
@@ -24,7 +26,7 @@ function Interactive:draw()
 
     local x, y = self.fixture:getBoundingBox()
     x = math.ceil(x)
-    y = math.ceil(y - self.height)
+    y = math.ceil(y)
 
     love.graphics.draw(self.image, self.quad, x, y)
 end
