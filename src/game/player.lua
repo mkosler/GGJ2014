@@ -104,14 +104,16 @@ function Player:update(dt)
         self.body:applyLinearImpulse(IMPULSE[1] * self.body:getMass(), IMPULSE[2] * self.body:getMass())
     end
 
-    if self.flags.up and self.terminal then
-        self.terminal:setUserData("used")
+    if self.flags.up then
+        if self.terminal then
+            self.terminal:setUserData("used")
 
-        self.plaque:start(self.terminalMood)
-        self.terminal = nil
+            self.plaque:start(self.terminalMood)
+            self.terminal = nil
 
-        self:setMood(self.terminalMood)
-        self.level:setMood(self:getMood())
+            self:setMood(self.terminalMood)
+            self.level:setMood(self:getMood())
+        end
     end
 end
 

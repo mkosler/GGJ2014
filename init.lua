@@ -7,6 +7,7 @@ return {
             },
             JUMP = love.audio.newSource("assets/sounds/jump.wav", "static"),
         },
+        SWITCH = love.audio.newSource("assets/sounds/switch.wav", "static"),
     },
     FONTS = {
         [10] = love.graphics.newFont("assets/fonts/slkscrb.ttf", 10),
@@ -19,6 +20,7 @@ return {
     TITLE_FONTS = {
         [44] = love.graphics.newFont("assets/fonts/slkscrb.ttf", 44),
     },
+    MAIN_THEME = love.audio.newSource("assets/sounds/theme.mp3", "stream"),
     FACES = {
         SAD = love.graphics.newImage("assets/images/face_sad.png"),
         NEUTRAL = love.graphics.newImage("assets/images/face_neutral.png"),

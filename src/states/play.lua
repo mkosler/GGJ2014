@@ -91,15 +91,18 @@ function Play:update(dt)
 
         self.number = self.number + 1
 
-        local color = { 255, 255, 255, 255 }
+        if self.number > #LEVELS then
+            self.number = 1
+            Gamestate.switch(Title)
+        else
+            Gamestate.switch(Play, LEVELS[self.number].PATH)
+        end
 
         --[[
         Timer.tween(1, self.color, { 255, 255, 255, 0 }, "linear", function ()
             Gamestate.switch(Play, LEVELS[self.number].PATH)
         end)
         ]]
-
-        Gamestate.switch(Play, LEVELS[self.number].PATH)
     end
 end
 

@@ -10,12 +10,17 @@ function love.load()
     LEVELS = INIT.LEVELS
 
     Play = require("src.states.play")
+    Title = require("src.states.title")
 
     camera = Camera()
     camera:zoomTo(2)
 
+    INIT.MAIN_THEME:setLooping(true)
+    INIT.MAIN_THEME:play()
+
     Gamestate.registerEvents()
-    Gamestate.switch(Play, LEVELS[1].PATH)
+    Gamestate.switch(Title)
+    --Gamestate.switch(Play, LEVELS[1].PATH)
 end
 
 function love.update(dt)

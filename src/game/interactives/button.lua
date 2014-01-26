@@ -15,6 +15,8 @@ end
 function Button:press()
     self.pressed = true
     self.quad = self.onquad
+
+    INIT.SOUNDS.SWITCH:play()
 end
 
 function Button:update(dt)
